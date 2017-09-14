@@ -1,0 +1,37 @@
+<md-sidenav-container>
+  <md-sidenav #sidenav mode="{{sidenaviMode}}" opened="{{sidenaviOpened}}" class="sidenavi-menu">
+    <md-nav-list class="sidenavi-menu-list">
+      <md-toolbar color="primary" class="shadow-toolbar">
+        <button *ngIf="sidenaviIconVisible" md-icon-button (click)="sideNaviToggle()">
+          <md-icon>arrow_back</md-icon>
+        </button>
+        <span>メニュー</span>
+      </md-toolbar>
+      <md-list-item *ngFor="let item of nowListLinkList" (click)="jumpPage(item.title, item.link)">
+        <md-icon md-list-icon>{{item.icon}}</md-icon>
+        <p md-line>{{item.title}}</p>
+      </md-list-item>
+      <md-divider></md-divider>
+      <md-list-item *ngFor="let item of otherLinkList" (click)="jumpPage(item.title, item.link)">
+        <md-icon md-list-icon>{{item.icon}}</md-icon>
+        <p md-line>{{item.title}}</p>
+      </md-list-item>
+    </md-nav-list>
+  </md-sidenav>
+
+  <div class="container-root">
+    <div class="container-header">
+      <md-toolbar color="primary" class="shadow-toolbar">
+        <button *ngIf="sidenaviIconVisible" md-icon-button (click)="sideNaviToggle()">
+          <md-icon>menu</md-icon>
+        </button>
+        <span>{{title}}</span>
+      </md-toolbar>
+    </div>
+
+    <div class="container-body">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</md-sidenav-container>
+
