@@ -1,8 +1,8 @@
-<md-list>
-  <h3 md-subheader>Folders</h3>
-  <md-list-item *ngFor="let folder of folders">
-    <md-icon md-list-icon>folder</md-icon>
-    <h4 md-line>{{folder.name}}</h4>
-    <p md-line> {{folder.updated | date}} </p>
+<md-nav-list class="list">
+  <md-list-item *ngFor="let app of appList;let i = index" (click)="onClickItem(app.id)">
+    <img md-list-avatar src="{{app.artwork_url}}" alt="artwork_url" />
+    <h4 md-line>{{app.name}}</h4>
+    <p md-line>{{app.artist_name}}</p>
+    <p>{{(i+1).toString()}}</p>
   </md-list-item>
-</md-list>
+</md-nav-list>

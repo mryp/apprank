@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
+import { RankingService, NowResponse, NowAppsResponse } from '../ranking.service'
+
 @Component({
   selector: 'app-now-list',
   templateUrl: './now-list.component.html',
@@ -8,24 +10,12 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class NowListComponent implements OnInit {
   rankingKind = "";
-  folders = [
-    {
-      name: 'Photos',
-      updated: new Date('1/1/16'),
-    },
-    {
-      name: 'Recipes',
-      updated: new Date('1/17/16'),
-    },
-    {
-      name: 'Work',
-      updated: new Date('1/28/16'),
-    }
-  ];
+  appList = [];
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private ranking: RankingService,
   ) {
     route.params.subscribe(params => {
       let kind = params['kind'];
@@ -41,7 +31,7 @@ export class NowListComponent implements OnInit {
       //更新があったデータだけ再取得を行う
       this.rankingKind = kind;
       if (isChangeKind) {
-        this.getListItem(this.rankingKind);
+        this.updateList(this.rankingKind);
       }
     });
   }
@@ -50,7 +40,35 @@ export class NowListComponent implements OnInit {
     console.log("NowListComponent#ngOnInit");
   }
 
-  getListItem(kind:string) {
-    console.log("NowListComponent#getListItem kind=" + kind);
+  updateList(kind:string) {
+    console.log("NowListComponent#updateList kind=" + kind);
+    this.appList = [];
+    this.ranking.getNow(
+      this.ranking.createDefaultCountry(),
+      this.ranking.createNowKindFromUrl(kind)
+    ).subscribe(
+      res => {
+        this.showListSuccess(res);
+      },
+      error => {
+        this.showListError(error);
+      }
+    )
+  }
+
+  showListSuccess(res:NowResponse) {
+    console.log("updated:" + res.updated);
+    for (let item of res.apps) {
+      this.appList.push(item);
+    }
+  }
+
+  showListError(error:any) {
+    let errorText = error.status + ":" + error.statusText;
+    console.log("ERROR:" + errorText);
+  }
+
+  onClickItem(id:number) {
+    console.log("NowListComponent#onClickItem id=" + id);
   }
 }
