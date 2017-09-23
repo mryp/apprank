@@ -1,0 +1,62 @@
+<div class="container-root">
+  <!-- ツールバー -->
+  <md-toolbar color="primary" class="container-header shadow-toolbar">
+    <button md-icon-button (click)="backToList()">
+      <md-icon>arrow_back</md-icon>
+    </button>
+    <span class="header-title">{{appInfo?.name}}</span>
+  </md-toolbar>
+
+  <!-- 画像表示 -->
+  <div class="container-body">
+    <div class="app-content">
+      <div class="app-title">
+        <div class="app-title-icon">
+          <img src="{{appInfo?.artwork_url}}" alt="artwork_url" />
+        </div>
+        <div>
+          <p class="app-title-name">{{appInfo?.name}}</p>
+          <p class="app-title-sub">{{appInfo?.artist_name}}</p>
+        </div>
+      </div>
+
+      <h3>表示期間</h3>
+      <md-form-field class="range-picker">
+        <input mdInput [mdDatepicker]="startpicker" placeholder="開始日">
+        <md-datepicker-toggle mdSuffix [for]="startpicker"></md-datepicker-toggle>
+        <md-datepicker #startpicker></md-datepicker>
+      </md-form-field>
+      <md-form-field class="range-picker">
+        <input mdInput [mdDatepicker]="endpicker" placeholder="終了日">
+        <md-datepicker-toggle mdSuffix [for]="endpicker"></md-datepicker-toggle>
+        <md-datepicker #endpicker></md-datepicker>
+      </md-form-field>
+      <button md-raised-button>期間を変更</button>
+
+      <h3>ランキング</h3>
+      <table>
+        <tbody>
+        <tr><th>カテゴリ</th><th>最新</th><th>最高</th><th>平均</th></tr>
+        <tr><td>セールス</td><td>3</td><td>4</td><td>4</td></tr>
+        <tr><td>無料</td><td>3</td><td>4</td><td>4</td></tr>
+        <tr><td>有料</td><td>3</td><td>4</td><td>4</td></tr>
+        </tbody>
+      </table>
+
+      <h3>チャート</h3>
+      <div class="chart-content">
+        <ngx-charts-line-chart
+          [scheme]="colorScheme"
+          [results]="rankingList"
+          [xAxis]="true"
+          [yAxis]="true"
+          [timeline]="true"
+          [autoScale]="true"
+          [xAxisTickFormatting]="xAxisTickFormatting"
+          [yAxisTickFormatting]="yAxisTickFormatting"
+        >
+        </ngx-charts-line-chart>
+      </div>
+      <p></p>
+  </div>
+</div>

@@ -22,6 +22,15 @@ export interface NowAppsResponse {
   artist_name: string;
 }
 
+export interface AppInfoResponse {
+  name: string;
+  info_url: string;
+  artwork_url: string;
+  artist_name: string;
+  artist_url: string;
+  copyright: string;
+}
+
 @Injectable()
 export class RankingService {
 
@@ -59,6 +68,15 @@ export class RankingService {
       .set('kind', kind.toString());
     let url = this.getApiUrl(Const.API_NOW);
     return this.http.get<NowResponse>(url,
+      { params: params, }
+    );
+  }
+
+  public getAppInfo(id:number): Observable<AppInfoResponse> {
+    let params = new HttpParams()
+      .set('id', id.toString());
+    let url = this.getApiUrl(Const.API_APP_INFO);
+    return this.http.get<AppInfoResponse>(url,
       { params: params, }
     );
   }

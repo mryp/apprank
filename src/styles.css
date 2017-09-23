@@ -51,3 +51,9 @@ md-card {
   padding: 0px;
   width: 300px;
 }
+
+.header-title {
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}

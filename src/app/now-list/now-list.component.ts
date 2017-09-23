@@ -70,5 +70,6 @@ export class NowListComponent implements OnInit {
 
   onClickItem(id:number) {
     console.log("NowListComponent#onClickItem id=" + id);
+    this.router.navigateByUrl('/app/' + id);
   }
 }

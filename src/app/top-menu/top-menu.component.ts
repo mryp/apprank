@@ -8,7 +8,7 @@ import { MdSidenav } from '@angular/material';
   styleUrls: ['./top-menu.component.css']
 })
 export class TopMenuComponent implements OnInit {
-  title = 'ランキングリスト';
+  title = 'セールス';
   widthTablet = 768;
 
   @ViewChild('sidenav') sidenav: MdSidenav;
