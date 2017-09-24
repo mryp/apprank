@@ -8,6 +8,10 @@ namespace Const{
   export const API_NOW = "v1/now";
   export const API_APP_INFO = "v1/appinfo";
   export const API_APP_RANK = "v1/apprank";
+
+  export const KIND_GROSSING = 1;
+  export const KIND_PAID = 3
+  export const KIND_FREE = 5
 }
 
 export interface NowResponse {
@@ -31,6 +35,15 @@ export interface AppInfoResponse {
   copyright: string;
 }
 
+export interface AppRankResponse {
+  apps: AppRankAppsResponse[];
+}
+
+export interface AppRankAppsResponse {
+  rank: number;
+  updated: string;
+}
+
 @Injectable()
 export class RankingService {
 
@@ -50,13 +63,13 @@ export class RankingService {
     let kind = 1;
     switch (kindText) {
       case "grossing":
-        kind = 1;
+        kind = Const.KIND_GROSSING;
         break;
       case "paid":
-        kind = 3;
+        kind = Const.KIND_PAID;
         break;
       case "free":
-        kind = 5;
+        kind = Const.KIND_FREE
         break;
     }
     return kind;
@@ -80,4 +93,26 @@ export class RankingService {
       { params: params, }
     );
   }
+
+  public getAppRank(id:number, country:string, kind:number, startDate:Date, endDate:Date): Observable<AppRankResponse> {
+    let params = new HttpParams()
+      .set('id', id.toString())
+      .set('country', country)
+      .set('kind', kind.toString())
+      .set('start', this.toDateString(startDate, "YYYY-MM-DD"))
+      .set('end', this.toDateString(endDate, "YYYY-MM-DD"));
+    let url = this.getApiUrl(Const.API_APP_RANK);
+    return this.http.get<AppRankResponse>(url,
+      { params: params, }
+    );
+  }
+
+  private toDateString(date:Date, format:string): string {
+    if (!format) format = 'YYYY-MM-DD';
+    format = format.replace(/YYYY/g, date.getFullYear().toString());
+    format = format.replace(/MM/g, ('0' + (date.getMonth() + 1)).slice(-2));
+    format = format.replace(/DD/g, ('0' + date.getDate()).slice(-2));
+    return format;
+  }
 }
+

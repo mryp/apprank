@@ -1,12 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { DataSource } from '@angular/cdk/collections';
 import { Observable } from 'rxjs/Observable';
-import { DateAdapter, NativeDateAdapter } from '@angular/material';
+import { DateAdapter, NativeDateAdapter, MdDatepicker } from '@angular/material';
 import 'rxjs/add/observable/of';
 
-import { RankingService, NowResponse, NowAppsResponse, AppInfoResponse } from '../ranking.service'
+import { RankingService, NowResponse, NowAppsResponse, AppInfoResponse, AppRankResponse, AppRankAppsResponse } from '../ranking.service'
+
+namespace Const{
+  export const KIND_GROSSING = 1;
+  export const KIND_PAID = 3
+  export const KIND_FREE = 5
+}
+
+class RankingValue {
+  now: number;
+  highest: number;
+  average: number;
+}
 
 @Component({
   selector: 'app-app-info',
@@ -14,8 +26,16 @@ import { RankingService, NowResponse, NowAppsResponse, AppInfoResponse } from '.
   styleUrls: ['./app-info.component.css']
 })
 export class AppInfoComponent implements OnInit {
+  //定数
+  KindTable:{ [key: number]: string; } = { 1: "セールス", 3: "有料", 5: "無料" };
+
   appID = 0;
   appInfo:AppInfoResponse = null;
+  appRankList: { [key: number]: AppRankResponse; } = {};
+  startDate: Date;
+  endDate: Date;
+  rankingTable: { [key: number]: RankingValue; } = {};
+
   rankingList = [
     {
       "name": "セールス",
@@ -115,6 +135,7 @@ export class AppInfoComponent implements OnInit {
     private ranking: RankingService,
   ) {
     dateAdapter.setLocale('ja-JP');
+    this.loadRangeSetting();
     route.params.subscribe(params => {
       let isChanged = false;
       let appID = +params['id'];
@@ -126,12 +147,19 @@ export class AppInfoComponent implements OnInit {
       this.appID = appID;
       if (isChanged) {
         this.updateInfo(this.appID);
+        this.updateRank(this.appID);
       }
     });
   }
 
   ngOnInit() {
     console.log("AppInfoComponent#ngOnInit");
+  }
+
+  loadRangeSetting() {
+    let now:Date = new Date();
+    this.startDate = new Date(now.setMonth(now.getMonth() -1));
+    this.endDate = new Date();
   }
 
   updateInfo(appID:number) {
@@ -144,7 +172,25 @@ export class AppInfoComponent implements OnInit {
       error => {
         this.showInfoError(error);
       }
-    )
+    );
+  }
+
+  updateRank(appID: number) {
+    console.log("AppInfoComponent#updateRank appid=" + appID);
+    this.appRankList = {};
+    this.rankingTable = {};
+    for (let kind in this.KindTable) {
+      this.ranking.getAppRank(appID, this.ranking.createDefaultCountry()
+        , +kind
+        , this.startDate, this.endDate).subscribe(
+        res => {
+          this.showRankSuccess(res, +kind);
+        },
+        error => {
+          this.showRankError(error);
+        }
+      );
+    }
   }
 
   showInfoSuccess(info:AppInfoResponse) {
@@ -156,7 +202,54 @@ export class AppInfoComponent implements OnInit {
     console.log("ERROR:" + errorText);
   }
 
+  showRankSuccess(rank:AppRankResponse, kind:number) {
+    console.log("showRankSuccess:" + rank.apps.length);
+    this.appRankList[kind] = rank;
+    let rankValue = new RankingValue();
+    rankValue.now = this.getLatestRank(rank.apps);
+    rankValue.highest = this.getHighestRank(rank.apps);
+    rankValue.average = this.getAverageRank(rank.apps);
+
+    this.rankingTable[kind] = rankValue;
+  }
+
+  getLatestRank(ranks: AppRankAppsResponse[]): number {
+    if (ranks.length == 0) {
+      return 999;
+    }
+    return ranks[ranks.length - 1].rank;
+  }
+
+  getHighestRank(ranks: AppRankAppsResponse[]): number {
+    let value = 999;
+    for (let i=0; i<ranks.length; i++) {
+      if (value > ranks[i].rank) {
+        value = ranks[i].rank;
+      }
+    }
+
+    return value;
+  }
+
+  getAverageRank(ranks: AppRankAppsResponse[]): number {
+    let average = 0;
+    for (let i=0; i<ranks.length; i++) {
+      average += ranks[i].rank;
+    }
+
+    return Math.floor(average / ranks.length);
+  }
+
+  showRankError(error:any) {
+    let errorText = error.status + ":" + error.statusText;
+    console.log("ERROR:" + errorText);
+  }
+
   backToList() {
     this.location.back();
+  }
+
+  changeRange() {
+
   }
 }

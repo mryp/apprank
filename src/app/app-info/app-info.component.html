@@ -22,24 +22,39 @@
 
       <h3>表示期間</h3>
       <md-form-field class="range-picker">
-        <input mdInput [mdDatepicker]="startpicker" placeholder="開始日">
+        <input mdInput [mdDatepicker]="startpicker" placeholder="開始日" [(ngModel)]="startDate">
         <md-datepicker-toggle mdSuffix [for]="startpicker"></md-datepicker-toggle>
         <md-datepicker #startpicker></md-datepicker>
       </md-form-field>
       <md-form-field class="range-picker">
-        <input mdInput [mdDatepicker]="endpicker" placeholder="終了日">
+        <input mdInput [mdDatepicker]="endpicker" placeholder="終了日" [(ngModel)]="endDate">
         <md-datepicker-toggle mdSuffix [for]="endpicker"></md-datepicker-toggle>
         <md-datepicker #endpicker></md-datepicker>
       </md-form-field>
-      <button md-raised-button>期間を変更</button>
+      <button md-raised-button (click)="changeRange()">期間を変更</button>
 
       <h3>ランキング</h3>
       <table>
         <tbody>
         <tr><th>カテゴリ</th><th>最新</th><th>最高</th><th>平均</th></tr>
-        <tr><td>セールス</td><td>3</td><td>4</td><td>4</td></tr>
-        <tr><td>無料</td><td>3</td><td>4</td><td>4</td></tr>
-        <tr><td>有料</td><td>3</td><td>4</td><td>4</td></tr>
+        <tr>
+          <td>セールス</td>
+          <td>{{rankingTable[1]?.now}}</td>
+          <td>{{rankingTable[1]?.highest}}</td>
+          <td>{{rankingTable[1]?.average}}</td>
+        </tr>
+        <tr>
+          <td>有料</td>
+          <td>{{rankingTable[3]?.now}}</td>
+          <td>{{rankingTable[3]?.highest}}</td>
+          <td>{{rankingTable[3]?.average}}</td>
+        </tr>
+        <tr>
+          <td>無料</td>
+          <td>{{rankingTable[5]?.now}}</td>
+          <td>{{rankingTable[5]?.highest}}</td>
+          <td>{{rankingTable[5]?.average}}</td>
+        </tr>
         </tbody>
       </table>
 
